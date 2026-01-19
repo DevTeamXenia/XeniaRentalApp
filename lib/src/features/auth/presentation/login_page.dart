@@ -32,8 +32,8 @@ class _LoginPageState extends State<LoginPage> {
 
     return WillPopScope(
       onWillPop: () async {
-        SystemNavigator.pop(); // close the app
-        return false; // prevent default back action
+        SystemNavigator.pop();
+        return false;
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -42,12 +42,11 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              /// TOP HEADER + LOGO
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.only(
-                  top: statusBarHeight + 20,
-                  bottom: 40,
+                  top: statusBarHeight,
+                  bottom: 20,
                 ),
                 decoration: const BoxDecoration(
                   color: Color(0xFFFEF2F3),
@@ -58,24 +57,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.arrow_back),
-                            onPressed: () {
-                              SystemNavigator.pop(); // Close the app
-                            },
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            "Login",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: 20),
                     Image.asset(
                       "assets/images/splash_logo.png",
@@ -104,7 +85,6 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 30),
 
-              /// LOGIN FORM
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
@@ -112,6 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const Text(
                       "Login to Dashboard",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.w500,
@@ -127,7 +108,6 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 40),
 
-              /// FOOTER
               const _BottomPoweredBy(),
             ],
           ),
@@ -203,10 +183,11 @@ class _SubmitButton extends StatelessWidget {
           builder: (_) => const Center(child: CircularProgressIndicator()),
         );
 
-        final success = await AuthApi.generateOtp(phone);
+        final String? errorMessage = await AuthApi.generateOtp(phone);
+
         Navigator.pop(context);
 
-        if (success) {
+        if (errorMessage == null) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -215,7 +196,7 @@ class _SubmitButton extends StatelessWidget {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Failed to send OTP")),
+            SnackBar(content: Text(errorMessage)),
           );
         }
       },

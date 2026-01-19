@@ -4,27 +4,38 @@ import 'api_client.dart';
 import 'package:http/http.dart' as http;
 
 class AuthApi {
-  static Future<bool> generateOtp(String phone) async {
-    try {
-      final response = await ApiClient.post(
-        ApiUrls.loginOtp,
-        {
-          "CompanyID": 1,
-          "MobileNo": phone,
-          "Email": "string",
-        },
-      );
+  
+static Future<String?> generateOtp(String phone) async {
+  try {
+    final response = await ApiClient.post(
+      ApiUrls.loginOtp,
+      {
+        "CompanyID": 1,
+        "MobileNo": phone,
+        "Email": "string",
+      },
+    );
 
-      if (response.statusCode == 200) {
-        final body = response.body.toLowerCase();
-        return body.contains("otp sent");
-      }
-
-      return false;
-    } catch (e) {
-      return false;
+    if (response.statusCode == 200) {
+      return null; // ✅ success
     }
+
+    if (response.statusCode == 401) {
+      final body = response.body;
+      return body.contains("message")
+          ? body
+              .replaceAll(RegExp(r'[{}"]'), '')
+              .split(':')
+              .last
+              .trim()
+          : "Phone number not registered";
+    }
+
+    return "Something went wrong. Please try again.";
+  } catch (e) {
+    return "Server error. Please try again.";
   }
+}
 
   static Future<String?> verifyOtp({
     required String phone,

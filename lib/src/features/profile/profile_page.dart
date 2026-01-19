@@ -69,7 +69,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             child: Column(
               children: [
-                /// Back button
                 Row(
                   children: [
                     const SizedBox(width: 7),
@@ -83,7 +82,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 const CircleAvatar(
                   radius: 45,
-                  backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
+                  backgroundImage: AssetImage('assets/images/ic_deafult.png'),
                 ),
 
                 const SizedBox(height: 10),
@@ -160,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  /// MENU ITEM
+
   Widget _buildMenuItem(String title, {VoidCallback? onTap}) {
     return Column(
       children: [
@@ -174,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  /// LOGOUT DIALOG
+
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,

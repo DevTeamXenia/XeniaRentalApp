@@ -32,7 +32,6 @@ class _OtpPageState extends State<OtpPage> {
 
     _startTimer();
 
-    // 🔑 Ensure keyboard opens initially
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).requestFocus(_focusNodes[0]);
     });
@@ -71,6 +70,7 @@ class _OtpPageState extends State<OtpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false, // ✅ FIX 1 (NO UI CHANGE)
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -115,8 +115,9 @@ class _OtpPageState extends State<OtpPage> {
                     autofocus: index == 0,
                     maxLength: 1,
                     keyboardType: TextInputType.number,
-                    textInputAction:
-                        index == _otpLength - 1 ? TextInputAction.done : TextInputAction.next,
+                    textInputAction: index == _otpLength - 1
+                        ? TextInputAction.done
+                        : TextInputAction.next,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.bold),
@@ -130,17 +131,14 @@ class _OtpPageState extends State<OtpPage> {
                       ),
                     ),
                     onChanged: (value) {
-                      if (value.isNotEmpty) {
-                        if (index < _otpLength - 1) {
+                      if (value.isNotEmpty && index < _otpLength - 1) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
                           FocusScope.of(context)
                               .requestFocus(_focusNodes[index + 1]);
-                        } else {
-                          _focusNodes[index].unfocus();
-                        }
+                        });
                       }
                     },
                     onTap: () {
-                      // 🔑 Force keyboard refresh
                       FocusScope.of(context).requestFocus(_focusNodes[index]);
                     },
                     inputFormatters: [
