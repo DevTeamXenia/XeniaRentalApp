@@ -5,7 +5,6 @@ import '../storage/token_storage.dart';
 class ApiClient {
   static Future<http.Response> get(String url) async {
     final token = await TokenStorage.getToken();
-
     return await http.get(
       Uri.parse(url),
       headers: {
@@ -29,6 +28,17 @@ class ApiClient {
         if (token != null) "Authorization": "Bearer $token",
       },
       body: jsonEncode(body),
+    );
+  }
+
+  static Future<http.Response> put(String url) async {
+    final token = await TokenStorage.getToken();
+    return await http.put(
+      Uri.parse(url),
+      headers: {
+        "accept": "*/*",
+        if (token != null) "Authorization": "Bearer $token",
+      },
     );
   }
 }

@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    // 🔑 FIX: Prevent null crash (NO UI CHANGE)
+ 
     if (_dashboard == null) {
       return const Scaffold(
         body: Center(child: Text("No dashboard data")),
@@ -151,9 +151,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 16),
-
               SizedBox(
                 height: 150,
                 child: ClipRRect(
@@ -169,7 +167,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-
               Container(
                 width: double.infinity,
                 padding:
@@ -181,14 +178,13 @@ class _HomePageState extends State<HomePage> {
                     bottomRight: Radius.circular(18),
                   ),
                 ),
-                child: const Text(
-                  "Info : Important Info Message Scrolling",
-                  style: TextStyle(color: Colors.white, fontSize: 13),
+                child: const TickerInfoMessage(
+                  message:
+                      "Info: Association Meeting scheduled on 15 February 2026. All members are requested to attend.",
+                  speed: 40, 
                 ),
               ),
-
               const SizedBox(height: 18),
-
               if (_dashboard!.nextUpcomingPayment != null) ...[
                 const Text("Upcoming Payments",
                     style:
@@ -209,8 +205,7 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text("Amount",
-                                    style:
-                                        TextStyle(color: Colors.black54)),
+                                    style: TextStyle(color: Colors.black54)),
                                 const SizedBox(height: 6),
                                 Text(
                                   "Rs ${_dashboard!.nextUpcomingPayment!.amount.toStringAsFixed(2)}",
@@ -222,8 +217,7 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(height: 6),
                                 Text(
                                   "Due Date\n${_dashboard!.nextUpcomingPayment!.date}",
-                                  style: const TextStyle(
-                                      color: Colors.black54),
+                                  style: const TextStyle(color: Colors.black54),
                                 ),
                               ],
                             ),
@@ -242,7 +236,21 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Payment feature coming soon 🚀",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    backgroundColor: Colors.black87,
+                                    behavior: SnackBarBehavior.floating,
+                                    margin: EdgeInsets.all(16),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
                               child: const Text("PAY",
                                   style: TextStyle(
                                       fontSize: 25,
@@ -257,7 +265,6 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 25),
               ],
-
               if (_dashboard!.previousUnpaidPayments.isNotEmpty) ...[
                 const Text("Unpaid Payments",
                     style:
@@ -267,11 +274,9 @@ class _HomePageState extends State<HomePage> {
                   height: 105,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount:
-                        _dashboard!.previousUnpaidPayments.length,
+                    itemCount: _dashboard!.previousUnpaidPayments.length,
                     itemBuilder: (_, i) {
-                      final p =
-                          _dashboard!.previousUnpaidPayments[i];
+                      final p = _dashboard!.previousUnpaidPayments[i];
                       return _PaymentCard(
                         "Rs ${p.amount.toStringAsFixed(2)}",
                         p.date,
@@ -282,7 +287,6 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 25),
               ],
-
               if (_dashboard!.previousPaidPayments.isNotEmpty) ...[
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -290,8 +294,7 @@ class _HomePageState extends State<HomePage> {
                     Text("Previous Payment",
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w700)),
-                    Text("See More  ->",
-                        style: TextStyle(color: Colors.red)),
+                    Text("See More  ->", style: TextStyle(color: Colors.red)),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -299,11 +302,9 @@ class _HomePageState extends State<HomePage> {
                   height: 105,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount:
-                        _dashboard!.previousPaidPayments.length,
+                    itemCount: _dashboard!.previousPaidPayments.length,
                     itemBuilder: (_, i) {
-                      final p =
-                          _dashboard!.previousPaidPayments[i];
+                      final p = _dashboard!.previousPaidPayments[i];
                       return _PaymentCard(
                         "Rs ${p.amount.toStringAsFixed(2)}",
                         p.date,
@@ -359,6 +360,72 @@ class _PaymentCard extends StatelessWidget {
           ),
           Text(date, style: const TextStyle(fontSize: 12)),
         ],
+      ),
+    );
+  }
+}
+
+class TickerInfoMessage extends StatefulWidget {
+  final String message;
+  final double speed; 
+
+  const TickerInfoMessage({
+    super.key,
+    required this.message,
+    this.speed = 50,
+  });
+
+  @override
+  State<TickerInfoMessage> createState() => _TickerInfoMessageState();
+}
+
+class _TickerInfoMessageState extends State<TickerInfoMessage> {
+  final ScrollController _scrollController = ScrollController();
+  late double _textWidth;
+  late double _containerWidth;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _startScrolling());
+  }
+
+  void _startScrolling() async {
+    while (mounted) {
+      _textWidth = _scrollController.position.maxScrollExtent +
+          _scrollController.position.viewportDimension;
+      _containerWidth = _scrollController.position.viewportDimension;
+
+      final duration = Duration(
+        seconds: ((_textWidth + _containerWidth) / widget.speed).ceil(),
+      );
+
+      await _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: duration,
+        curve: Curves.linear,
+      );
+
+      // Reset to start immediately for continuous loop
+      _scrollController.jumpTo(0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      controller: _scrollController,
+      scrollDirection: Axis.horizontal,
+      physics: const NeverScrollableScrollPhysics(),
+      child: Text(
+        widget.message,
+        style: const TextStyle(color: Colors.white, fontSize: 13),
       ),
     );
   }

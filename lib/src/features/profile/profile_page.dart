@@ -25,23 +25,58 @@ class _ProfilePageState extends State<ProfilePage> {
     _loadProfile();
   }
 
-  Future<void> _loadProfile() async {
-    try {
-      final data = await ProfileApi.fetchProfile();
-      if (!mounted) return;
+Future<void> _loadProfile() async {
+  try {
+    final data = await ProfileApi.fetchProfile();
+    if (!mounted) return;
+    final int? tenantId = data['TenantID'];
+    if (tenantId != null) {
+      await TokenStorage.saveTenantId(tenantId);
+    }
+
+    setState(() {
+      tenantName = data['TenantName'] ?? "No Name";
+      phoneNumber = data['PhoneNumber'] ?? "";
+    });
+  } catch (e) {
+    if (mounted) {
       setState(() {
-        tenantName = data['TenantName'] ?? "No Name";
-        phoneNumber = data['PhoneNumber'] ?? "";
+        tenantName = "Failed to load";
+        phoneNumber = "";
       });
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          tenantName = "Failed to load";
-          phoneNumber = "";
-        });
-      }
     }
   }
+}
+
+
+
+Future<void> _deleteAccount() async {
+  try {
+    final tenantId = await TokenStorage.getTenantId();
+
+    if (tenantId == null) {
+      throw Exception("Tenant ID not found");
+    }
+
+    await ProfileApi.disableAccount(tenantId: tenantId,);
+
+    await TokenStorage.clearAll();
+
+  } catch (e) {
+    debugPrint("Delete account failed: $e");
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Unable to delete account. Please try again."),
+        ),
+      );
+    }
+  }
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +184,30 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
+                    
+                  ),
+                ),
+                  const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () => _showDeleteAccountDialog(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 248, 209, 209),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.delete_forever),
+                        SizedBox(width: 10),
+                        Text(
+                          "Delete Account",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    
                   ),
                 ),
               ],
@@ -261,4 +320,95 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+
+void _showDeleteAccountDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => Center(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: Material(
+          type: MaterialType.transparency,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.warning_amber_rounded,
+                    color: Colors.red, size: 48),
+                const SizedBox(height: 12),
+                const Text(
+                  "Delete Account",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  "This action is permanent.\n\n"
+                  "All your data, payments, and profile information "
+                  "will be permanently deleted and cannot be recovered.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Colors.black54),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.grey.shade300,
+                          minimumSize: const Size(0, 45),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          minimumSize: const Size(0, 45),
+                        ),
+                        onPressed: () async {
+                          await _deleteAccount();
+                          if (!mounted) return;
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const LoginPage()),
+                            (_) => false,
+                          );
+                        },
+                        child: const Text(
+                          "Delete",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+
 }

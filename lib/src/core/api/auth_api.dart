@@ -17,7 +17,7 @@ static Future<String?> generateOtp(String phone) async {
     );
 
     if (response.statusCode == 200) {
-      return null; // ✅ success
+      return null;
     }
 
     if (response.statusCode == 401) {

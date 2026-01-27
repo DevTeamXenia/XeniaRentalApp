@@ -1,5 +1,5 @@
 class ApiUrls {
-  static const String baseUrl = "https://rentalapi.xeniapos.com/api";
+  static const String baseUrl = "http://192.168.1.34:8083/api";
 
  
   static const String loginOtp = "$baseUrl/Auth/OTP/login";
@@ -18,5 +18,7 @@ class ApiUrls {
 
 
 static const String dashboardHome = "$baseUrl/DashBoard/home";
+
+  static const String disableTenant = "$baseUrl/Auth/disable";
 
 }

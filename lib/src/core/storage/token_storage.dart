@@ -6,6 +6,7 @@ class TokenStorage {
   static const _tokenKey = 'auth_token';
   static const _propertyIdKey = 'property_id';
   static const _propertyNameKey = 'property_name';
+static const _tenantIdKey = 'tenant_id';
 
 
   static const _unitIdKey = 'unit_id';
@@ -71,6 +72,19 @@ class TokenStorage {
     final value = await _storage.read(key: _isUnitSelectedKey);
     return value == 'true';
   }
+
+
+  static Future<void> saveTenantId(int tenantId) async {
+  await _storage.write(
+    key: _tenantIdKey,
+    value: tenantId.toString(),
+  );
+}
+
+static Future<int?> getTenantId() async {
+  final value = await _storage.read(key: _tenantIdKey);
+  return value != null ? int.tryParse(value) : null;
+}
 
 
   static Future<void> clearAll() async {
