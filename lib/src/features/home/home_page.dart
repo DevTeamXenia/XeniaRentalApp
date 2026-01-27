@@ -88,7 +88,6 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
- 
     if (_dashboard == null) {
       return const Scaffold(
         body: Center(child: Text("No dashboard data")),
@@ -181,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                 child: const TickerInfoMessage(
                   message:
                       "Info: Association Meeting scheduled on 15 February 2026. All members are requested to attend.",
-                  speed: 40, 
+                  speed: 40,
                 ),
               ),
               const SizedBox(height: 18),
@@ -367,7 +366,7 @@ class _PaymentCard extends StatelessWidget {
 
 class TickerInfoMessage extends StatefulWidget {
   final String message;
-  final double speed; 
+  final double speed;
 
   const TickerInfoMessage({
     super.key,
