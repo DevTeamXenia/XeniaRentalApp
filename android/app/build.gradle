@@ -4,9 +4,15 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
-    namespace = "com.example.rental_app"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.spidertechnosoft.rental_app"
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -20,26 +26,34 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("D:/XENIA/DOC/KEYS/KEYSTORE/MOBI/xeniamobi.jks")
-            storePassword "Xeniatech@2025"   
-            keyAlias "xeniamobikey"            
-            keyPassword "Xeniatech@2025"      
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
         }
     }
 
     defaultConfig {
-        applicationId = "com.example.rental_app"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        applicationId = "com.spidertechnosoft.rental_app"
+        minSdk = 21
+        targetSdk = 35
+        versionCode 111 
+        versionName "1.0.0"
     }
 
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled false      
+            minifyEnabled false
             shrinkResources false
+            packaging {
+                jniLibs {
+                    useLegacyPackaging = false
+                }
+            }
+             ndk {
+                debugSymbolLevel 'FULL'
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.rental_app
+package com.spidertechnosoft.rental_app
 
 import io.flutter.embedding.android.FlutterActivity
 

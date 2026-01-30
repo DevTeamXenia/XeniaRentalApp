@@ -10,7 +10,7 @@ static Future<String?> generateOtp(String phone) async {
     final response = await ApiClient.post(
       ApiUrls.loginOtp,
       {
-        "CompanyID": 1,
+        "CompanyID": 4,
         "MobileNo": phone,
         "Email": "string",
       },
@@ -46,7 +46,7 @@ static Future<String?> generateOtp(String phone) async {
         "${ApiUrls.baseUrl}/Auth/login"
         "?userName=$phone"
         "&password=$phone"
-        "&companyId=1"
+        "&companyId=4"
         "&otp=$otp"
         "&deviceToken=hj",
       );

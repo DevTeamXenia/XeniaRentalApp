@@ -50,30 +50,30 @@ Future<void> _loadProfile() async {
 
 
 
-Future<void> _deleteAccount() async {
-  try {
-    final tenantId = await TokenStorage.getTenantId();
+// Future<void> _deleteAccount() async {
+//   try {
+//     final tenantId = await TokenStorage.getTenantId();
 
-    if (tenantId == null) {
-      throw Exception("Tenant ID not found");
-    }
+//     if (tenantId == null) {
+//       throw Exception("Tenant ID not found");
+//     }
 
-    await ProfileApi.disableAccount(tenantId: tenantId,);
+//     await ProfileApi.disableAccount(tenantId: tenantId,);
 
-    await TokenStorage.clearAll();
+//     await TokenStorage.clearAll();
 
-  } catch (e) {
-    debugPrint("Delete account failed: $e");
+//   } catch (e) {
+//     debugPrint("Delete account failed: $e");
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Unable to delete account. Please try again."),
-        ),
-      );
-    }
-  }
-}
+//     if (mounted) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(
+//           content: Text("Unable to delete account. Please try again."),
+//         ),
+//       );
+//     }
+//   }
+// }
 
 
 
@@ -350,48 +350,53 @@ void _showDeleteAccountDialog(BuildContext context) {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  "This action is permanent.\n\n"
-                  "All your data, payments, and profile information "
+          const Text(
+                  "To delete your account, please send an email to\n\n"
+                  "xeniacare@spidertechnosoft.com\n\n"
+                  "from your registered email address.\n\n"
+                  "Your account data, payments, and profile information "
                   "will be permanently deleted and cannot be recovered.",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: Colors.black54),
                 ),
+
                 const SizedBox(height: 20),
+                
                 Row(
                   children: [
-                    Expanded(
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.grey.shade300,
-                          minimumSize: const Size(0, 45),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
+                    // Expanded(
+                    //   child: TextButton(
+                    //     style: TextButton.styleFrom(
+                    //       backgroundColor: Colors.grey.shade300,
+                    //       minimumSize: const Size(0, 45),
+                    //     ),
+                    //     onPressed: () => Navigator.pop(context),
+                    //     child: const Text(
+                    //       "Cancel",
+                    //       style: TextStyle(fontWeight: FontWeight.bold),
+                    //     ),
+                    //   ),
+                    // ),
+                    // const SizedBox(width: 12),
                     Expanded(
                       child: TextButton(
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.red,
                           minimumSize: const Size(0, 45),
                         ),
-                        onPressed: () async {
-                          await _deleteAccount();
-                          if (!mounted) return;
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const LoginPage()),
-                            (_) => false,
-                          );
-                        },
+                         onPressed: () => Navigator.pop(context),
+                        // onPressed: () async {
+                        //   await _deleteAccount();
+                        //   if (!mounted) return;
+                        //   Navigator.pushAndRemoveUntil(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (_) => const LoginPage()),
+                        //     (_) => false,
+                        //   );
+                        // },
                         child: const Text(
-                          "Delete",
+                          "Ok",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
